@@ -24,7 +24,6 @@ class User(Base):
     is_completed = sa.Column(sa.BOOLEAN)
 
 def connect_db():
-
     engine = sa.create_engine(DB_PATH)
     Base.metadata.create_all(engine)
     session = sessionmaker(engine)
@@ -35,7 +34,7 @@ def main():
     session = connect_db()
     query = session.query(User)
     for instance in query:
-        my_tasks = instance.desc
+        my_tasks = instance.description
     return my_tasks
 
 
@@ -55,19 +54,15 @@ class TodoItem:
             "uid": self.uid
         }
 
-
-
 tasks_db = {
     uid: TodoItem(desc, uid)
     for uid, desc in enumerate(
         start=1,
         iterable=[
-        ' '
+        main()
         ],
     )
 }
-
-
 
 @enable_cors
 @app.route("/api/tasks/")
