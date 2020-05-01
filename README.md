@@ -1,3 +1,6 @@
+npm install
+npm run serve
+
 Сервера разворачиваются 
 http://192.168.1.140:8080 - frontend
 http://192.168.1.140:5000 - backend
