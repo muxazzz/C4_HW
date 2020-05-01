@@ -1,9 +1,43 @@
 import bottle
 from bottle import response
 from truckpad.bottle.cors import CorsPlugin, enable_cors
-import users
+
+import json
+import sqlite3
+import uuid
+import datetime
+import sqlalchemy as sa
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
 
 app = bottle.Bottle()
+
+DB_PATH = "sqlite:///user.sqlite3"
+Base = declarative_base()
+
+class User(Base):
+   
+    __tablename__ = 'user'
+    uid = sa.Column(sa.INTEGER, primary_key=True)
+    description = sa.Column(sa.TEXT)
+    is_completed = sa.Column(sa.BOOLEAN)
+
+def connect_db():
+
+    engine = sa.create_engine(DB_PATH)
+    Base.metadata.create_all(engine)
+    session = sessionmaker(engine)
+    return session()
+
+    
+def main():
+    session = connect_db()
+    query = session.query(User)
+    for instance in query:
+        my_tasks = instance.desc
+    return my_tasks
+
 
 class TodoItem:
     def __init__(self, description, unique_id):
@@ -22,18 +56,18 @@ class TodoItem:
         }
 
 
+
 tasks_db = {
     uid: TodoItem(desc, uid)
     for uid, desc in enumerate(
         start=1,
         iterable=[
-            "прочитать книгу",
-            "учиться жонглировать 30 минут",
-            "помыть посуду",
-            "поесть",
+        ' '
         ],
     )
 }
+
+
 
 @enable_cors
 @app.route("/api/tasks/")
@@ -58,6 +92,19 @@ def add_task():
             t = TodoItem(desc, new_uid)
             t.is_completed = is_completed
             tasks_db[new_uid] = t
+        user = User(
+        description=desc,
+        is_completed=is_completed,
+    )
+        session = connect_db()
+        # просим пользователя выбрать режим
+        # запрашиваем данные пользоватлея
+        # добавляем нового пользователя в сессию
+        session.add(user)
+        # обновляем время последнего визита для этого пользователя
+        # сохраняем все изменения, накопленные в сессии
+        session.commit()
+        print("Спасибо, данные сохранены!")
         return "OK"
 
 @enable_cors
@@ -83,5 +130,9 @@ def enable_cors():
 
 app.install(CorsPlugin(origins=['http://192.168.1.140:8080']))
 
+
+
+
 if __name__ == "__main__":
     bottle.run(app, host="192.168.1.140", port=5000)
+    main()
