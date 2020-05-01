@@ -4,7 +4,9 @@
   <div class="container">
     <div class="col-sm-10">
       <h1>Задачи</h1>
-      <h2>Выполнено {{count}}</h2>
+      <h2>Выполнено {{this.todos.filter(x => Boolean(x.is_completed)).length}}</h2>
+      <h2>Невыполнено {{this.todos.length -
+          this.todos.filter(x => Boolean(x.is_completed)).length}}</h2>
       <confirmation :message="confirmationMessage"
       v-if="showConfirmation" variant="danger"
       dismissible
