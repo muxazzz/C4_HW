@@ -1,6 +1,7 @@
 import bottle
 from bottle import response
 from truckpad.bottle.cors import CorsPlugin, enable_cors
+import users
 
 app = bottle.Bottle()
 
@@ -72,7 +73,7 @@ def show_or_modify_task(uid):
         return f"Modified task {uid}"
     elif bottle.request.method == "DELETE":
         tasks_db.pop(uid)
-        return f"Deleted task {uid}"
+        return f"Deleted task {uid}"                                                                        
 
 @app.hook('after_request')
 def enable_cors():
